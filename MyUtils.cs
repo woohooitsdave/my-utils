@@ -14,67 +14,88 @@ namespace MyUtils
     
     public class Display
     {
+        public Display() {}
         
+        public void ConfigureConsole(ConsoleSettings cs){
+            Console.SetWindowSize(cs.W, cs.H);
+            Console.BufferWidth = cs.W;
+            Console.BufferHeight = cs.H;
+            Console.BackgroundColor = cs.BG;
+            Console.ForegroundColor = cs.FG;
+            Console.Clear();           
+        }
         
-        
-        
+        public void Write(string s){
+            Console.Write(s);            
+        }
+        public void Write(char c){
+            Console.Write(c);            
+        }
+        public void WriteLine(string s){
+            Console.WriteLine(s);            
+        }
+        public void WriteLines(string[] strings){
+            foreach(string s in strings) WriteLine(s);            
+        }
     }
     
     
     
     public class Security
     {
-        private System.IO.StreamReader inpFile;
-        private System.IO.StreamWriter outFile;
+        //private System.IO.StreamReader inpFile;
+        //private System.IO.StreamWriter outFile;
         private char[] delimiters = new char[] { 'a', 'b', 'c', 'd', '\n' };
         
         public Security() { }
         
         public Security(char[] delims) { delimiters = delims; }
         
-        public void EncryptFile(string inpfname, string outfname)
+        public string Encrypt(string input)
         {
-            inpFile = new System.IO.StreamReader(inpfname);
-            outFile = new System.IO.StreamWriter(outfname);
-            Random randomSeed = new Random();
-
-            string confs = inpFile.ReadToEnd();
-            char[] charArr = confs.ToCharArray();            
+            return Encrypt(input.ToCharArray());
+        }
             
-            foreach (char ch in charArr)
+        public string Encrypt(char[] input)
+        {
+            //inpFile = new System.IO.StreamReader(inpfname);
+            //outFile = new System.IO.StreamWriter(outfname);
+            Random randomSeed = new Random();          
+            string output = "";
+            foreach (char ch in input)
             {
                 int encrypt = ch*2;
                 int rndm = randomSeed.Next(0, delimiters.Length);
                 char bumper = delimiters[rndm];
-                outFile.Write(encrypt+""+ bumper);
+                output += (encrypt+""+ bumper);
             } 
-            Console.WriteLine("Encryption done");
-            inpFile.Close();    
-            outFile.Close();
+            return output;
         }
         
         
-        public void DecryptFile(string inpfname, string outfname)
+        public string Decrypt(string input)
         {
-            inpFile = new System.IO.StreamReader(inpfname);
-            outFile = new System.IO.StreamWriter(outfname);
+            return Decrypt(input.Split(delimiters,
+				     StringSplitOptions.RemoveEmptyEntries));
+        }
+        
+        public string Decrypt(string[] input)
+        {
+            //inpFile = new System.IO.StreamReader(inpfname);
+            //outFile = new System.IO.StreamWriter(outfname);
             
-            string[] confsArr = inpFile.ReadToEnd().Split(delimiters,
-				     StringSplitOptions.RemoveEmptyEntries);
-            
-            foreach (string conf in confsArr)
+            string output = "";
+            foreach (string conf in input)
             {
                 int decrypt = 0;
                 if(conf != ""){
                     try {
                         decrypt = Int32.Parse(conf)/2;
-                        outFile.Write((char)decrypt);
-                    } catch { Console.WriteLine("\nerror: " + conf);}
+                        output += ((char)decrypt);
+                    } catch { }
                 }
             }
-            Console.WriteLine("Decryption done");
-            inpFile.Close();    
-            outFile.Close();
+            return output;
         }
         
     }//class: Security
